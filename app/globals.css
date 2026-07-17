@@ -1,0 +1,186 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+
+  --color-rose-glow: #ff4fa3;
+  --color-rose-deep: #d81b60;
+  --color-mist: #fff0f6;
+  --color-orchid: #c471ed;
+}
+
+@property --blob-a {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@property --blob-b {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 120deg;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-[#0f0612] text-zinc-100 antialiased;
+  font-family: var(--font-sans);
+}
+
+/* Liquid mesh blobs */
+.liquid-stage {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background: radial-gradient(120% 80% at 10% 0%, #2a0a22 0%, #0f0612 45%, #12081a 100%);
+}
+
+.liquid-blob {
+  position: absolute;
+  width: min(72vw, 640px);
+  height: min(72vw, 640px);
+  border-radius: 45% 55% 60% 40% / 55% 45% 55% 45%;
+  filter: blur(72px) saturate(1.15);
+  opacity: 0.55;
+  mix-blend-mode: screen;
+  animation: drift 22s ease-in-out infinite;
+}
+
+.liquid-blob--a {
+  left: -18%;
+  top: -12%;
+  background: conic-gradient(from var(--blob-a), #ff4fa3, #ff8ad0, #c471ed, #ff4fa3);
+  animation-name: drift, spin-a;
+  animation-duration: 22s, 38s;
+}
+
+.liquid-blob--b {
+  right: -22%;
+  top: 18%;
+  width: min(68vw, 580px);
+  height: min(68vw, 580px);
+  background: conic-gradient(from var(--blob-b), #d81b60, #ff4fa3, #7c3aed, #d81b60);
+  animation-name: drift-reverse, spin-b;
+  animation-duration: 26s, 44s;
+}
+
+.liquid-blob--c {
+  left: 18%;
+  bottom: -28%;
+  width: min(90vw, 720px);
+  height: min(90vw, 720px);
+  opacity: 0.35;
+  background: radial-gradient(circle at 30% 30%, rgba(255, 138, 208, 0.9), transparent 55%),
+    radial-gradient(circle at 70% 60%, rgba(124, 58, 237, 0.75), transparent 50%);
+  animation: drift 30s ease-in-out infinite;
+}
+
+@keyframes drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  33% {
+    transform: translate3d(3%, 4%, 0) scale(1.05);
+  }
+  66% {
+    transform: translate3d(-4%, 2%, 0) scale(0.96);
+  }
+}
+
+@keyframes drift-reverse {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(-5%, -3%, 0) scale(1.08);
+  }
+}
+
+@keyframes spin-a {
+  to {
+    --blob-a: 360deg;
+  }
+}
+
+@keyframes spin-b {
+  to {
+    --blob-b: 360deg;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .liquid-blob {
+    animation: none !important;
+    opacity: 0.35;
+  }
+}
+
+/* Film grain / liquid texture */
+.liquid-noise {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.045;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Glass panel — “liquid glass” stack */
+.glass-panel {
+  position: relative;
+  border-radius: 1.25rem;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.14) 0%,
+    rgba(255, 255, 255, 0.04) 42%,
+    rgba(255, 79, 163, 0.06) 100%
+  );
+  backdrop-filter: blur(22px) saturate(1.35);
+  -webkit-backdrop-filter: blur(22px) saturate(1.35);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12) inset, 0 24px 80px rgba(0, 0, 0, 0.35),
+    0 1px 0 rgba(255, 255, 255, 0.08) inset;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.glass-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    125deg,
+    rgba(255, 255, 255, 0.45),
+    rgba(255, 79, 163, 0.25) 35%,
+    rgba(255, 255, 255, 0.08) 60%,
+    rgba(196, 113, 237, 0.35)
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.glass-panel--dense {
+  background: linear-gradient(
+    160deg,
+    rgba(18, 8, 22, 0.55) 0%,
+    rgba(255, 255, 255, 0.06) 45%,
+    rgba(255, 79, 163, 0.08) 100%
+  );
+}
+
+/* Legal section anchors */
+.legal-section {
+  scroll-margin-top: 6.5rem;
+}
